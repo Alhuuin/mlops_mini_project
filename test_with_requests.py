@@ -1,6 +1,6 @@
 import requests
 
-url = "http://127.0.0.1:8000/predict"
+url = "http://127.0.0.1:8034/predict"
 
 input_data = {
     "size": 100,        # house size in square meters
