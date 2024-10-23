@@ -30,6 +30,8 @@ jobs:
       # Step 6: Deploy to the remote server via SSH
       - name: Deploy via SSH
         run: |
-          sshpass -p ${{ secrets.PRODUCTION_SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_SSH_USER }}@${{ secrets.PRODUCTION_SERVER }} \
-            "docker compose pull ${{ secrets.DOCKER_USERNAME }}/fastapi-house-app && \
-            docker compose up -d fastapi-house-app "
+            sshpass -p ${{ secrets.PRODUCTION_SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_SSH_USER }}@${{ secrets.PRODUCTION_SERVER }} \
+              "docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi-house-app:latest && \
+              docker stop fastapi-house-app || true && \
+              docker rm fastapi-house-app || true && \
+              docker run -d --name fastapi-house-app -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/fastapi-house-app:latest"
