@@ -2,10 +2,8 @@ version: '3.8'
 
 services:
   fastapi-app:
+    image: fastapi-house-app 
     build: .
-    container_name: fastapi_house_price_container
     ports:
       - "8034:8034"
-    volumes:
-      - .:/app
     restart: always
