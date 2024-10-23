@@ -25,7 +25,7 @@ jobs:
 
       # Step 5: Push the Docker image to Docker Hub
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/fastapi-houses-app
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/fastapi-house-app
 
       # Step 6: Deploy to the remote server via SSH
       - name: Deploy via SSH
