@@ -7,11 +7,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Check out the repository
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      # Step 2: Build the Docker image
+      - name: Build Docker image
+        run: docker compose -f docker-compose.yml build fastapi-house-price-app
+
+      # Step 3: Tag the Docker image
+      - name: Tag Docker image
+        run: docker tag ml_model ${{ secrets.DOCKER_USERNAME }}/fastapi-house-price-app
+
+      # Step 4: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # Step 5: Push the Docker image to Docker Hub
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/fastapi-houses-price-app
+
+      # Step 6: Deploy to the remote server via SSH
+      - name: Deploy via SSH
+        run: |
+          sshpass -p ${{ secrets.PRODUCTION_SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_SSH_USER }}@${{ secrets.PRODUCTION_SERVER }} \
+            "docker compose pull ${{ secrets.DOCKER_USERNAME }}/fastapi-house-price-app && \
+            docker compose up -d ml_model"
+
+
+
+
+
+
+
+name: GitHub Actions Demo
+
+on: [push]
+
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Check out the repository
         uses: actions/checkout@v2
 
       - name: Build Docker image
-        run: docker compose build fastapi-house-price-app
+
 
       - name: Tag Docker image
         run: docker tag ml_model ${{ secrets.DOCKER_USERNAME }}/fastapi-house-price-app
