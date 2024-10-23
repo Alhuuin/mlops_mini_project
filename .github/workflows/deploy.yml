@@ -17,7 +17,7 @@ jobs:
 
       # Step 3: Tag the Docker image
       - name: Tag Docker image
-        run: docker tag ml_model ${{ secrets.DOCKER_USERNAME }}/fastapi-house-app
+        run: docker tag fastapi-house-app ${{ secrets.DOCKER_USERNAME }}/fastapi-house-app
 
       # Step 4: Log in to Docker Hub
       - name: Log in to Docker Hub
@@ -32,4 +32,4 @@ jobs:
         run: |
           sshpass -p ${{ secrets.PRODUCTION_SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_SSH_USER }}@${{ secrets.PRODUCTION_SERVER }} \
             "docker compose pull ${{ secrets.DOCKER_USERNAME }}/fastapi-house-app && \
-            docker compose up -d ml_model"
+            docker compose up -d fastapi-house-app "
