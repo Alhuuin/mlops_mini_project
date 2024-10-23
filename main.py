@@ -15,5 +15,5 @@ class HouseInput(BaseModel):
 def predict_price(house: HouseInput):
     data = [[house.size, house.bedrooms, house.garden]]
     prediction = model.predict(data)
-    return {"predicted_price": round(prediction[0], 2)}
+    return {"predicted_price": prediction[0]}
 
