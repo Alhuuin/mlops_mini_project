@@ -7,15 +7,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check out the repository
         uses: actions/checkout@v2
-        run: docker compose build ml_model
-        run: docker tag ml_model ${{ secrets.DOCKER_USERNAME }}/monrepoondockerhub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/monrepoondockerhub
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_SSH_USER }}@${{ secrets.PRODUCTION_SERVER }} \
-            "docker compose pull ${{ secrets.DOCKER_USERNAME }}/monrepoondockerhub && \
-            docker compose up -d ml_model"
-        env:
-          SSH_PASSWORD: ${{ secrets.PRODUCTION_SSH_PASSWORD }}
 
+      - name: Build Docker image
+        run: docker compose build ml_model
+
+      - name: Tag Docker image
+        run: docker tag ml_model ${{ secrets.DOCKER_USERNAME }}/monrepoondockerhub
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/monrepoondockerhub
+
+      - name: Deploy via SSH with password
+        run: |
+          expect <<- EOF
+          set timeout 5
+          spawn ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_SSH_USER }}@${{ secrets.PRODUCTION_SERVER }}
+          expect "*password:"
+          send "${{ secrets.PRODUCTION_SSH_PASSWORD }}\r"
+          expect "*$ "
+          send "docker compose pull ${{ secrets.DOCKER_USERNAME }}/monrepoondockerhub && docker compose up -d ml_model\r"
+          expect "*$ "
+          send "exit\r"
+          EOF
